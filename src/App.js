@@ -1,8 +1,15 @@
 import { StrictMode } from "react";
 
+import "./global.scss";
+
+import Router from "./routes";
+import UserProvider from "./context/UserContext";
+
 const App = () => (
   <StrictMode>
-    App
+    <UserProvider>
+      <Router />
+    </UserProvider>
   </StrictMode>
 );
 

@@ -1,0 +1,59 @@
+$poppins-font-weight-900: "Poppins, Black";
+$poppins-font-weight-800: "Poppins, Extra-Bold";
+$poppins-font-weight-700: "Poppins, Bold";
+$poppins-font-weight-600: "Poppins, Semi-Bold";
+$poppins-font-weight-500: "Poppins, Medium";
+$poppins-font-weight-400: "Poppins, Regular";
+$poppins-font-weight-300: "Poppins, Light";
+$poppins-font-weight-200: "Poppins, Extra-Light";
+$poppins-font-weight-100: "Poppins, Thin";
+
+$font-size-xxs: 0.625rem; // 10px
+$font-size-xs: 0.75rem; // 12px
+$font-size-sm: 0.875rem; // 14px
+$font-size-base: 1rem; // 16px
+$font-size-lg: 1.125rem; // 18px
+$font-size-xl: 1.5rem; // 24px
+
+$breakpoints: (
+  // 480px
+  sm: 30rem,
+  // 768px
+  md: 48rem,
+  // 1024px
+  lg: 64rem,
+  // 1280px
+  xl: 80rem,
+  // 1536px
+  xxl: 96rem,
+);
+
+@mixin mobile {
+  @media (min-width: map-get($dse-breakpoints, "sm")) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: map-get($dse-breakpoints, "md")) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media (min-width: map-get($dse-breakpoints, "lg")) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: map-get($dse-breakpoints, "xl")) {
+    @content;
+  }
+}
+
+@mixin huge-screen {
+  @media (min-width: map-get($dse-breakpoints, "xxl")) {
+    @content;
+  }
+}
