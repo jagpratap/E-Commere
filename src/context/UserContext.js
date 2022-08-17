@@ -7,17 +7,17 @@ import {
 
 // 1. Create context(with default value)
 export const UserContext = createContext({
-  userProducts: [],
-  userCart: {},
+  products: [],
+  cart: {},
 });
 
 // 2. Create Provider(Component)
 const UserProvider = ({ children }) => {
-  const [userProducts, setUserProducts] = useState([]);
-  const [userCart, setUserCart] = useState({});
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState({});
   const value = useMemo(() => ({
-    userProducts, setUserProducts, userCart, setUserCart,
-  }), [userProducts, userCart]);
+    products, setProducts, cart, setCart,
+  }), [products, cart]);
   return (
     <UserContext.Provider value={value}>
       {children}

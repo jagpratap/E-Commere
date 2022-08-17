@@ -1,9 +1,9 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 import commerce from "../../../../lib/commerce";
 
-/* eslint-disable no-console */
-const inputs = [
+const inputFields = [
   {
     id: 1,
     type: "text",
@@ -31,23 +31,32 @@ const inputs = [
   {
     id: 5,
     type: "text",
-    name: "houseNumber",
-    placeholder: "House No.*",
+    name: "street",
+    placeholder: "Street*",
   },
   {
     id: 6,
     type: "text",
-    name: "areaColony",
-    placeholder: "Area/Colony name*",
+    name: "townCity",
+    placeholder: "City/town*",
   },
   {
     id: 7,
     type: "text",
-    name: "pinCode",
-    placeholder: "Pin code*",
+    name: "postalZipCode",
+    placeholder: "Postal Zip Code*",
   },
 ];
-const AddressForm = ({ checkoutToken }) => {
+const AddressForm = ({ checkoutToken, handleAddressNextStep }) => {
+  const [inputs, setInputs] = useState({
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    email: "",
+    street: "",
+    townCity: "",
+    postalZipCode: "",
+  });
   // Shipping Country
   const [shippingCountries, setShippingCountries] = useState([]);
   const [shippingCountry, setShippingCountry] = useState("");
@@ -58,22 +67,25 @@ const AddressForm = ({ checkoutToken }) => {
   const [shippingOptions, setShippingOptions] = useState([]);
   const [shippingOption, setShippingOption] = useState("");
 
+  // Fetching Shipping Countries
   useEffect(() => {
-    const fetchShippingCountries = async (checkoutTokenId) => {
-      const { countries } = await commerce.services.localeListShippingCountries(checkoutTokenId);
+    const fetchShippingCountries = async (token) => {
+      const { countries } = await commerce.services.localeListShippingCountries(token);
       setShippingCountries(countries);
-      setShippingCountry(Object.keys(countries)[0]);
+      setShippingCountry(Object.keys(countries)[1]);
     };
     fetchShippingCountries(checkoutToken);
   }, []);
+  // Fetching Shipping Subdivisions
   useEffect(() => {
     const fetchShippingSubdivisions = async (countryCode) => {
       const { subdivisions } = await commerce.services.localeListSubdivisions(countryCode);
       setShippingSubdivisions(subdivisions);
-      setShippingSubdivision(Object.keys(subdivisions)[0]);
+      setShippingSubdivision(Object.keys(subdivisions)[1]);
     };
     if (shippingCountry) fetchShippingSubdivisions(shippingCountry);
   }, [shippingCountry]);
+  // Fetching Shipping Options
   useEffect(() => {
     const fetchShippingOptions = async (checkoutTokenId, country, region = null) => {
       const response = await commerce.checkout.getShippingOptions(checkoutTokenId, { country, region });
@@ -86,19 +98,31 @@ const AddressForm = ({ checkoutToken }) => {
   const countries = Object.entries(shippingCountries).map(([code, name]) => ({ id: code, label: name }));
   const subdivisions = Object.entries(shippingSubdivisions).map(([code, name]) => ({ id: code, label: name }));
   const options = shippingOptions.map((sO) => ({ id: sO.id, label: `${sO.description}-(${sO.price.formatted_with_symbol})` }));
-  console.log(options);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = {
+      ...inputs,
+      shippingCountry,
+      shippingSubdivision,
+      shippingOption,
+    };
+    handleAddressNextStep(formData);
+  };
 
   return (
-    <div className="">
+    <>
       <div className="text-xl font-medium sm:text-start text-center">Shipping address</div>
-      <form className="my-3">
-        <div className="grid sm:grid-cols-2">
-          {inputs.map((input) => (
-            <div key={input.id} className="h-8 my-3">
+      <form className="my-3" onSubmit={handleSubmit}>
+        <div className="grid grid-cols-2">
+          {inputFields.map((inputField) => (
+            <div key={inputField.id} className="h-8 my-3">
               <input
-                type={input.type}
-                placeholder={input.placeholder}
-                name={input.name}
+                type={inputField.type}
+                placeholder={inputField.placeholder}
+                name={inputField.name}
+                value={inputs[inputField.name]}
+                onChange={(e) => setInputs({ ...inputs, [e.target.name]: e.target.value })}
                 className="border-b duration-100 hover:border-b-2 hover:border-black outline-none focus:border-b-2 focus:!border-blue-700"
                 required
               />
@@ -149,8 +173,25 @@ const AddressForm = ({ checkoutToken }) => {
             </select>
           </div>
         </div>
+        <div className="flex justify-between mt-5">
+          <Link to="/cart">
+            {" "}
+            <button
+              type="button"
+              className="bg-white hover:bg-slate-100 border-2 border-slate-100 customButton text-black"
+            >
+              Back To Cart
+            </button>
+          </Link>
+          <button
+            type="submit"
+            className="bg-blue-700 hover:bg-blue-900 customButton"
+          >
+            Next
+          </button>
+        </div>
       </form>
-    </div>
+    </>
   );
 };
 

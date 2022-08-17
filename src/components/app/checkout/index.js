@@ -1,11 +1,12 @@
+/* eslint-disable no-console */
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 import { useUserContext } from "../../../context/UserContext";
 
 import commerce from "../../../lib/commerce";
 import AddressForm from "./addressForm";
 import PaymentForm from "./paymentForm";
+import Confirmation from "./confirmation";
 
 const steps = [
   {
@@ -25,20 +26,48 @@ const steps = [
 ];
 
 const Checkout = () => {
-  const { userCart } = useUserContext();
+  const { cart, setCart } = useUserContext();
   const [phase, setPhase] = useState(1);
   const [checkoutToken, setCheckoutToken] = useState(null);
+  const [shippingData, setShippingData] = useState({});
+  const [order, setOrder] = useState({});
+  // Generate Token //
   useEffect(() => {
     const generateToken = async () => {
       try {
-        const token = await commerce.checkout.generateToken(userCart.id, { type: "cart" });
+        const token = await commerce.checkout.generateToken(cart.id, { type: "cart" });
         setCheckoutToken(token);
       } catch (error) {
-        // console.log(error);
+        console.log("[error]", error);
       }
     };
     generateToken();
   }, []);
+  // Address Form //
+  const handleAddressNextStep = (data) => {
+    setShippingData(data);
+    setPhase((prevPhase) => prevPhase + 1);
+  };
+  // Payment Form //
+  const refreshCart = async () => {
+    const newCart = await commerce.cart.refresh();
+    setCart(newCart);
+  };
+  const handleCaptureCheckout = async (tokenId, newOrder) => {
+    try {
+      const incomingOrder = await commerce.checkout.capture(tokenId, newOrder);
+      setOrder(incomingOrder);
+      refreshCart();
+    } catch (error) {
+      console.log("[error]", error);
+    }
+  };
+  const handlePaymentBackStep = () => {
+    setPhase((prevPhase) => prevPhase - 1);
+  };
+  const handlePaymentNextStep = () => {
+    setPhase((prevPhase) => prevPhase + 1);
+  };
   return (
     <div className="border rounded sm:shadow duration-100 sm:hover:shadow-md sm:w-[30rem] w-full mx-auto sm:my-10 p-5">
       <div className="text-center text-3xl font-semibold mb-6">Checkout</div>
@@ -47,54 +76,35 @@ const Checkout = () => {
           if (step.id === 2) return <div key={step.id} className="border sm:w-[8rem] w-1/3 h-0" />;
           return (
             <div key={step.id} className="flex w-100 my-2">
-              <p className="bg-blue-900 w-5 rounded-full text-white text-center mr-1">{step.stepNum}</p>
-              <p>{step.stepName}</p>
+              <div className="w-5 text-white text-center mr-1">
+                {(phase > step.stepNum) && <span><img src="./assets/images/CheckCircle.svg" alt="Check_Circle" /></span>}
+                <p className={(phase >= step.stepNum) ? "bg-blue-900 rounded-full" : "bg-slate-500 rounded-full"}>
+                  {(phase <= step.stepNum) && step.stepNum}
+                </p>
+              </div>
+              <p className={(phase >= step.stepNum) ? "text-black" : "text-slate-500"}>{step.stepName}</p>
             </div>
           );
         })}
       </div>
       <div className="mt-5">
-        {phase === 1 && <AddressForm checkoutToken={checkoutToken} />}
-        {phase === 2 && <PaymentForm />}
-      </div>
-      <div className="flex justify-between">
-        {phase === 1 ? (
-          <Link to="/cart">
-            {" "}
-            <button
-              type="button"
-              className="bg-white hover:bg-slate-100 border-2 border-slate-100 customButton text-black"
-            >
-              Back To Cart
-            </button>
-          </Link>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setPhase(1)}
-            className="bg-white hover:bg-slate-100 border-2 border-slate-100 customButton text-black"
-          >
-            Back
-          </button>
+        {phase === 1 && (
+          <AddressForm
+            checkoutToken={checkoutToken}
+            handleAddressNextStep={handleAddressNextStep}
+          />
         )}
-        {phase === 2 ? (
-          <Link to="/cart">
-            {" "}
-            <button
-              type="button"
-              className="bg-blue-700 hover:bg-blue-900 customButton"
-            >
-              Pay $200
-            </button>
-          </Link>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setPhase(2)}
-            className="bg-blue-700 hover:bg-blue-900 customButton"
-          >
-            Next
-          </button>
+        {phase === 2 && (
+          <PaymentForm
+            checkoutToken={checkoutToken}
+            shippingData={shippingData}
+            onCaptureCheckout={handleCaptureCheckout}
+            handlePaymentBackStep={handlePaymentBackStep}
+            handlePaymentNextStep={handlePaymentNextStep}
+          />
+        )}
+        {phase === 3 && (
+          <Confirmation order={order} />
         )}
       </div>
     </div>

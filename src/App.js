@@ -1,16 +1,31 @@
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 
 import "./global.scss";
 
-import Router from "./routes";
-import UserProvider from "./context/UserContext";
+import { useUserContext } from "./context/UserContext";
 
-const App = () => (
-  <StrictMode>
-    <UserProvider>
+import Router from "./routes";
+import commerce from "./lib/commerce";
+
+const App = () => {
+  const { setProducts, setCart } = useUserContext();
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const response = await commerce.products.list();
+      setProducts(response.data);
+    };
+    const fetchCart = async () => {
+      const response = await commerce.cart.retrieve();
+      setCart(response);
+    };
+    fetchProducts();
+    fetchCart();
+  }, []);
+  return (
+    <StrictMode>
       <Router />
-    </UserProvider>
-  </StrictMode>
-);
+    </StrictMode>
+  );
+};
 
 export default App;
