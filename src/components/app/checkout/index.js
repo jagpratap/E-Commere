@@ -58,15 +58,13 @@ const Checkout = () => {
       const incomingOrder = await commerce.checkout.capture(tokenId, newOrder);
       setOrder(incomingOrder);
       refreshCart();
+      setPhase((prevPhase) => prevPhase + 1);
     } catch (error) {
       console.log("[error]", error);
     }
   };
   const handlePaymentBackStep = () => {
     setPhase((prevPhase) => prevPhase - 1);
-  };
-  const handlePaymentNextStep = () => {
-    setPhase((prevPhase) => prevPhase + 1);
   };
   return (
     <div className="border rounded sm:shadow duration-100 sm:hover:shadow-md sm:w-[30rem] w-full mx-auto sm:my-10 p-5">
@@ -100,7 +98,6 @@ const Checkout = () => {
             shippingData={shippingData}
             onCaptureCheckout={handleCaptureCheckout}
             handlePaymentBackStep={handlePaymentBackStep}
-            handlePaymentNextStep={handlePaymentNextStep}
           />
         )}
         {phase === 3 && (

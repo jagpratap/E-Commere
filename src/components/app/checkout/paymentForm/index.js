@@ -5,7 +5,6 @@ const PaymentForm = ({
   shippingData,
   onCaptureCheckout,
   handlePaymentBackStep,
-  handlePaymentNextStep,
 }) => {
   const [inputs, setInputs] = useState({
     cardNumber: "",
@@ -43,7 +42,6 @@ const PaymentForm = ({
       },
     };
     onCaptureCheckout(checkoutToken.id, orderData);
-    handlePaymentNextStep();
   };
   const handleChange = (event, length) => {
     const { name, value } = event.target;

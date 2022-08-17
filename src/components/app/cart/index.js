@@ -21,7 +21,7 @@ const Cart = () => {
   };
   if (!cart.line_items) return "Loading...";
   return (
-    <div className="sm:container mx-auto my-5">
+    <div className="sm:container mx-auto my-5 min-h-[64vh]">
       <div className="sm:text-start text-center text-3xl font-semibold mb-3">Your Shopping Cart</div>
       {!cart.line_items.length ? (
         <div>
@@ -41,13 +41,13 @@ const Cart = () => {
               />
             ))}
           </div>
-          <div className="sm:flex justify-between items-center mt-6">
+          <div className="sm:flex items-center mt-6">
             <div className="font-semibold text-center sm:mb-0 mb-2">
               Subtotal:
               {" "}
               <b className="ml-1">{cart.subtotal.formatted_with_symbol}</b>
             </div>
-            <div className="flex justify-center sm:gap-5 gap-2">
+            <div className="flex sm:ml-auto sm:mx-auto justify-center sm:gap-5 gap-2">
               <button type="button" className="bg-red-500 hover:bg-red-600 active:bg-red-700 customButton" onClick={handleEmptyCart}>EMPTY CART</button>
               <button type="button" className="bg-blue-500 hover:bg-blue-600 customButton">
                 <Link to="/checkout">CHECKOUT</Link>
