@@ -67,7 +67,7 @@ const Checkout = () => {
     setPhase((prevPhase) => prevPhase - 1);
   };
   return (
-    <div className="border rounded sm:shadow duration-100 sm:hover:shadow-md sm:w-[30rem] w-full mx-auto sm:my-10 p-5">
+    <div className="border rounded sm:shadow duration-100 sm:hover:shadow-md sm:w-[30rem] w-full mx-auto sm:my-10 p-5 min-h-[64vh]">
       <div className="text-center text-3xl font-semibold mb-6">Checkout</div>
       <div className="flex justify-between items-center text-sm">
         {steps.map((step) => {
