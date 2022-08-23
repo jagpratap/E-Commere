@@ -49,7 +49,6 @@
       "warn",
       "as-needed"
     ],
-    "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [
       "error",
       {
@@ -59,8 +58,6 @@
         ]
       }
     ],
-    "react/function-component-definition": "off",
-    "jsx-a11y/no-noninteractive-element-interactions": "off",
     "react/forbid-prop-types": [
       "error",
       {
@@ -70,8 +67,6 @@
         ]
       }
     ],
-    "react/jsx-props-no-spreading": "off",
-    "react/prop-types": "off",
     "jsx-a11y/label-has-associated-control": [
       "error",
       {
@@ -93,6 +88,11 @@
           ]
         }
       }
-    ]
+    ],
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/function-component-definition": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off"
   }
 }
